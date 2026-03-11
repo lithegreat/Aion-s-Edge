@@ -124,6 +124,11 @@ The core logic lives in `src/OptimizationEngine.py`:
 
 ```
 neuroevolution_games/
+├── report/
+│   ├── main.tex               # Main LaTeX report entry point
+│   ├── references.bib        # Bibliography database
+│   ├── Makefile              # Report build commands
+│   └── sections/             # Report chapters/sections
 ├── src/
 │   ├── app.py                 # Aion's Edge (Streamlit app)
 │   └── OptimizationEngine.py  # LP, MOO, and voting solvers
@@ -134,6 +139,29 @@ neuroevolution_games/
 │   └── config-feedforward.yaml  # NEAT configuration
 ├── checkpoints/              # Training checkpoints (auto-saved)
 └── pyproject.toml            # Dependencies
+```
+
+## 📄 Report Module
+
+This repository now includes a dedicated LaTeX report module in
+`report/` for writing course notes, experiment summaries, and project
+reports.
+
+**Build prerequisites:**
+- A LaTeX distribution such as TeX Live
+- `latexmk`
+- `bibtex` (or the TeX Live package that provides it)
+
+**Build the PDF:**
+```bash
+cd report
+make pdf
+```
+
+**Clean generated files:**
+```bash
+cd report
+make clean
 ```
 
 ## 🎯 Training Tips
