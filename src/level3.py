@@ -6,14 +6,17 @@ from typing import List, Tuple
 
 import streamlit as st
 
-from src.campaign import apply_colony_delta, change_influence_tokens
+from src.campaign import (
+    apply_colony_delta,
+    change_influence_tokens,
+    record_turn_report,
+    set_phase,
+)
 from src.level3_core import (
     FACTIONS,
     PLANS,
-    VOTING_SCENARIOS,
     enact_council_plan,
     generate_live_ballots,
-    generate_random_ballots,
     resolve_voting_rule,
 )
 from src.level3_views import (
@@ -80,30 +83,17 @@ def _resolve_live_council(rule: str) -> None:
             ),
         )
         st.session_state.last_council_outcome = summary
+        record_turn_report(
+            "Council",
+            f"Deadlock under {rule}. The council stalled and morale fell.",
+        )
     else:
         enact_council_plan(winner, rule)
+        record_turn_report(
+            "Council",
+            f"{rule} approved {winner} and converted it into law.",
+        )
     st.session_state.live_lobby = None
-
-
-def _resolve_ballots(
-    live_mode: bool,
-) -> Tuple[List[Tuple[List[str], int]], List[Tuple[str, str]]]:
-    """Return ballots and faction labels for the chosen scenario."""
-    if live_mode:
-        return generate_live_ballots()
-
-    scenario = VOTING_SCENARIOS[st.session_state.l3_scenario]
-    if scenario["ballots"] is not None:
-        return scenario["ballots"], scenario["factions"]
-
-    if st.session_state.voting_ballots is None:
-        ballots, factions_info = generate_random_ballots()
-        st.session_state.voting_ballots = ballots
-        st.session_state.voting_factions = factions_info
-    return (
-        st.session_state.voting_ballots,
-        st.session_state.voting_factions,
-    )
 
 
 def render_level3() -> None:
@@ -111,55 +101,36 @@ def render_level3() -> None:
     st.markdown(
         """
         The colony parliament has three factions that must choose one development
-        plan to implement. Different voting rules can produce **different
-        winners** — this is the well-known **voting paradox**.
-
-        Choose a scenario and try different voting methods to see how winners
-        change.
+        plan to implement. This is the political checkpoint of the turn: you
+        now need to convert your policy direction into an actual law.
         """
     )
 
     st.sidebar.header("🏛️ L3 Parliamentary Voting")
 
-    scenario_names = [scenario["name"] for scenario in VOTING_SCENARIOS]
-    chosen_idx = st.sidebar.radio(
-        "Choose scenario",
-        options=range(len(scenario_names)),
-        format_func=lambda index: scenario_names[index],
-        key="l3_scenario",
-    )
-    scenario = VOTING_SCENARIOS[chosen_idx]
-    live_mode = scenario["ballots"] == "live"
-
-    if live_mode:
-        council_rule = _render_live_controls()
-        if st.sidebar.button(
-            "🏛️ Resolve council and enact winner",
-            use_container_width=True,
-            key="l3_enact_live",
-        ):
-            _resolve_live_council(council_rule)
-            st.rerun()
-
+    st.sidebar.caption("Stage 3 of 4: negotiate and resolve the council vote.")
+    council_rule = _render_live_controls()
     if st.sidebar.button(
-        "🎲 Refresh random scenario",
+        "🏛️ Resolve council and continue",
         use_container_width=True,
-        key="l3_refresh",
+        key="l3_enact_live",
     ):
-        st.session_state.voting_ballots = None
-        st.session_state.voting_factions = None
-        st.session_state.live_lobby = None
+        _resolve_live_council(council_rule)
+        if not st.session_state.game_over:
+            set_phase("resolution")
         st.rerun()
 
-    ballots, factions_info = _resolve_ballots(live_mode)
+    ballots, factions_info = generate_live_ballots()
 
-    st.markdown(f"**Scenario: {scenario['name']}**")
-    st.markdown(f"*{scenario['description']}*")
+    st.markdown("**Scenario: Live Council Vote**")
+    st.markdown(
+        "*Faction weights and preferences react to the current colony. Use"
+        " influence carefully before the chamber locks its decision.*"
+    )
 
-    if live_mode:
-        render_plan_catalog()
-        if st.session_state.last_council_outcome is not None:
-            st.info(st.session_state.last_council_outcome)
+    render_plan_catalog()
+    if st.session_state.last_council_outcome is not None:
+        st.info(st.session_state.last_council_outcome)
 
     render_preferences_table(factions_info)
 

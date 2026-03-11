@@ -32,6 +32,19 @@ START_MORALE = 60.0
 START_INFLUENCE_TOKENS = 2
 CRITICAL_THRESHOLD = 0.0
 
+TURN_PHASES: Tuple[str, ...] = (
+    "production",
+    "policy",
+    "council",
+    "resolution",
+)
+PHASE_LABELS: Dict[str, str] = {
+    "production": "1. Production",
+    "policy": "2. Policy",
+    "council": "3. Council",
+    "resolution": "4. Resolution",
+}
+
 
 @dataclass(frozen=True)
 class DevelopmentPlan:
@@ -156,10 +169,12 @@ def init_session_state() -> None:
     """Initialise all session-state keys on first run."""
     defaults: Dict[str, object] = {
         "turn": 1,
+        "phase": "production",
         "b_ub": DEFAULT_B_UB.copy(),
         "objective": DEFAULT_OBJECTIVE.copy(),
         "current_event": None,
         "event_log": [],
+        "turn_report": {},
         "total_score": 0.0,
         "game_over": False,
         "defeat_reason": None,
@@ -182,11 +197,33 @@ def init_session_state() -> None:
         if key not in st.session_state:
             st.session_state[key] = value
 
+    if st.session_state.current_event is None:
+        prepare_turn_event()
+
 
 def reset_session_state() -> None:
     """Clear the entire campaign state and restart cleanly."""
     for key in list(st.session_state.keys()):
         del st.session_state[key]
+
+
+def set_phase(phase: str) -> None:
+    """Move the campaign to a specific turn phase."""
+    if phase not in TURN_PHASES:
+        raise ValueError(f"Unknown phase: {phase}")
+    st.session_state.phase = phase
+
+
+def record_turn_report(section: str, summary: str) -> None:
+    """Store one summary line for the current turn resolution."""
+    report = dict(st.session_state.turn_report)
+    report[section] = summary
+    st.session_state.turn_report = report
+
+
+def get_phase_index() -> int:
+    """Return the zero-based index of the active phase."""
+    return TURN_PHASES.index(st.session_state.phase)
 
 
 def get_b_ub() -> NDArray[np.float64]:
@@ -282,13 +319,20 @@ def render_campaign_status() -> None:
         for entry in reversed(st.session_state.campaign_log[-6:]):
             st.markdown(f"- {entry}")
 
+    phase_columns = st.columns(len(TURN_PHASES))
+    active_index = get_phase_index()
+    for index, phase in enumerate(TURN_PHASES):
+        label = PHASE_LABELS[phase]
+        if index < active_index:
+            phase_columns[index].success(label)
+        elif index == active_index:
+            phase_columns[index].info(label)
+        else:
+            phase_columns[index].caption(label)
 
-def advance_turn() -> None:
-    """Advance the game by one turn and roll the next event."""
-    if st.session_state.turn >= TOTAL_TURNS:
-        st.session_state.game_over = True
-        return
 
+def prepare_turn_event() -> None:
+    """Reset LP inputs and roll the event for the current turn."""
     st.session_state.b_ub = DEFAULT_B_UB.copy()
     st.session_state.objective = DEFAULT_OBJECTIVE.copy()
 
@@ -302,7 +346,54 @@ def advance_turn() -> None:
             DEFAULT_OBJECTIVE * event.coeff_multiplier
         )
 
-    st.session_state.event_log.append(
-        f"Turn {st.session_state.turn + 1}: {event.title}"
-    )
+    turn_entry = f"Turn {st.session_state.turn}: {event.title}"
+    if not st.session_state.event_log or st.session_state.event_log[-1] != turn_entry:
+        st.session_state.event_log.append(turn_entry)
+    record_turn_report("Event", f"Current disruption: {event.title}")
+
+
+def advance_turn() -> None:
+    """Advance to the next campaign turn after resolution."""
+    if st.session_state.turn >= TOTAL_TURNS:
+        st.session_state.game_over = True
+        return
+
     st.session_state.turn += 1
+    st.session_state.phase = "production"
+    st.session_state.turn_report = {}
+    st.session_state.moo_ai_allocations = None
+    st.session_state.voting_ballots = None
+    st.session_state.voting_factions = None
+    st.session_state.live_lobby = None
+    st.session_state.last_council_outcome = None
+    prepare_turn_event()
+
+
+def render_turn_resolution() -> None:
+    """Display the end-of-turn summary and advance button."""
+    st.markdown(
+        f"### Turn {st.session_state.turn} Resolution"
+    )
+    st.markdown(
+        "This is the campaign heartbeat: review what happened across all"
+        " three systems, then lock in the consequences and continue."
+    )
+
+    for label in ["Event", "Production", "Policy", "Council"]:
+        if label in st.session_state.turn_report:
+            st.markdown(
+                f"- **{label}**: {st.session_state.turn_report[label]}"
+            )
+
+    if st.session_state.turn >= TOTAL_TURNS:
+        button_label = "🏁 Finalize campaign"
+    else:
+        button_label = f"⏭️ Start turn {st.session_state.turn + 1}"
+
+    if st.button(
+        button_label,
+        use_container_width=True,
+        key="campaign_next_turn",
+    ):
+        advance_turn()
+        st.rerun()

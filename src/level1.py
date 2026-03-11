@@ -19,11 +19,12 @@ from src.campaign import (
     X_MAX,
     Y_MAX,
     GameEvent,
-    advance_turn,
     apply_colony_delta,
     get_b_ub,
     get_objective,
+    record_turn_report,
     reset_session_state,
+    set_phase,
 )
 
 
@@ -70,6 +71,13 @@ def resolve_level1_turn(
                 " efficiency."
             ),
         )
+        record_turn_report(
+            "Production",
+            (
+                f"Feasible plan produced {z_player:.0f} output at"
+                f" {efficiency * 100:.0f}% efficiency."
+            ),
+        )
         return
 
     apply_colony_delta(
@@ -81,6 +89,10 @@ def resolve_level1_turn(
             f"Turn {st.session_state.turn}: infeasible production plan"
             " triggered rationing and unrest."
         ),
+    )
+    record_turn_report(
+        "Production",
+        "Infeasible production caused rationing, unrest, and reserve losses.",
     )
 
 
@@ -277,6 +289,7 @@ def render_level1() -> None:
 
     st.sidebar.header("⚙️ L1 Production Control")
     st.sidebar.markdown(f"**Turn {st.session_state.turn} / {TOTAL_TURNS}**")
+    st.sidebar.caption("Stage 1 of 4: lock the colony's production plan.")
 
     x1_player = st.sidebar.slider("x₁ — Oxygen production", 0, 60, 20, 1, key="l1_x1")
     x2_player = st.sidebar.slider("x₂ — Food production", 0, 80, 20, 1, key="l1_x2")
@@ -292,10 +305,14 @@ def render_level1() -> None:
     st.sidebar.latex(rf"C_2:\;x_1+2x_2\leq {b_ub[1]:.0f}")
 
     st.sidebar.markdown("---")
-    if st.sidebar.button("⏭️ Submit and Next Turn", use_container_width=True, key="l1_next"):
+    if st.sidebar.button(
+        "✅ Lock production and continue",
+        use_container_width=True,
+        key="l1_next",
+    ):
         resolve_level1_turn(x1_player, x2_player, opt_value, feasible)
         if not st.session_state.game_over:
-            advance_turn()
+            set_phase("policy")
         st.rerun()
 
     st.sidebar.metric("📈 Cumulative Total Output", f"{st.session_state.total_score:.0f}")

@@ -12,10 +12,35 @@ _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
-from src.campaign import init_session_state, render_campaign_status  # noqa: E402
+from src.campaign import (  # noqa: E402
+    PHASE_LABELS,
+    TOTAL_TURNS,
+    init_session_state,
+    render_campaign_status,
+    render_turn_resolution,
+    reset_session_state,
+)
 from src.level1 import render_level1  # noqa: E402
 from src.level2 import render_level2  # noqa: E402
 from src.level3 import render_level3  # noqa: E402
+
+
+def _render_game_over() -> None:
+    """Render the end-of-campaign screen."""
+    if st.session_state.defeat_reason is None:
+        st.balloons()
+        st.success(
+            f"Campaign complete. You survived {TOTAL_TURNS} turns with"
+            f" total output **{st.session_state.total_score:.0f}**."
+        )
+    else:
+        st.error(
+            f"Campaign failed: {st.session_state.defeat_reason}"
+        )
+
+    if st.button("🔄 Restart campaign", key="campaign_restart"):
+        reset_session_state()
+        st.rerun()
 
 
 def main() -> None:
@@ -31,20 +56,22 @@ def main() -> None:
     st.title("🚀 Aion's Edge: The Optimization Frontier")
     render_campaign_status()
 
-    tab1, tab2, tab3 = st.tabs([
-        "🔋 Level 1 — Linear Programming",
-        "🔬 Level 2 — Multi-Objective Optimisation",
-        "🏛️ Level 3 — Parliamentary Voting",
-    ])
+    if st.session_state.game_over:
+        _render_game_over()
+        return
 
-    with tab1:
+    st.markdown(
+        f"### Active Phase: {PHASE_LABELS[st.session_state.phase]}"
+    )
+
+    if st.session_state.phase == "production":
         render_level1()
-
-    with tab2:
+    elif st.session_state.phase == "policy":
         render_level2()
-
-    with tab3:
+    elif st.session_state.phase == "council":
         render_level3()
+    else:
+        render_turn_resolution()
 
 
 if __name__ == "__main__":

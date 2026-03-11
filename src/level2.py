@@ -10,7 +10,12 @@ import streamlit as st
 from numpy.typing import NDArray
 
 from src.OptimizationEngine import MOOSolver
-from src.campaign import apply_colony_delta, change_influence_tokens
+from src.campaign import (
+    apply_colony_delta,
+    change_influence_tokens,
+    record_turn_report,
+    set_phase,
+)
 
 
 N_MOO_SOLUTIONS = 50
@@ -80,6 +85,15 @@ def apply_policy_choice(
         ),
     )
     change_influence_tokens(1 if pareto_optimal else 0)
+    pareto_text = "Pareto-optimal" if pareto_optimal else "dominated"
+    record_turn_report(
+        "Policy",
+        (
+            f"Adopted a {pareto_text} budget: industry {industry:.0f}%,"
+            f" ecology {ecology:.0f}%, welfare {welfare:.0f}%"
+            f" -> output {output:.0f}, pollution {pollution:.0f}."
+        ),
+    )
 
 
 def draw_pareto_plot(
@@ -192,6 +206,7 @@ def render_level2() -> None:
     )
 
     st.sidebar.header("🔬 L2 Policy Design")
+    st.sidebar.caption("Stage 2 of 4: commit a medium-term policy package.")
     if st.sidebar.button(
         "🎲 Generate New Policy Market",
         use_container_width=True,
@@ -270,7 +285,11 @@ def render_level2() -> None:
                     " dominates your proposal."
                 )
 
-        if st.button("✅ Enact this policy", use_container_width=True, key="l2_enact"):
+        if st.button(
+            "✅ Enact policy and continue",
+            use_container_width=True,
+            key="l2_enact",
+        ):
             apply_policy_choice(
                 allocation=player_allocation,
                 pollution=player_pollution,
@@ -278,7 +297,8 @@ def render_level2() -> None:
                 morale_lift=morale_lift,
                 pareto_optimal=is_pareto,
             )
-            st.session_state.moo_ai_allocations = None
+            if not st.session_state.game_over:
+                set_phase("council")
             st.rerun()
 
         st.markdown("---")
