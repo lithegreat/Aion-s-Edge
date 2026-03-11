@@ -1,8 +1,41 @@
-# Neuroevolution Games
+# Aion's Edge
 
 Hands-on projects for the course "Multi-Criteria Optimization and
 Decision Analysis." The main experience is Aion's Edge (a Streamlit
 strategy game), plus two classic neuroevolution demos.
+
+## ✅ Prerequisites
+
+Before installation, make sure you have:
+
+- Python 3.14+
+- `uv` package manager installed
+- (Linux) Development libraries for graphics/physics packages used by
+	`pygame` and `gymnasium[box2d]`
+
+If `uv` is not installed:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+> [!WARNING]
+> This project uses Python 3.14 (very new), so some dependencies may not
+> have prebuilt wheels yet. `pygame` and `gymnasium[box2d]` may need local
+> compilation during install.
+>
+> On Fedora 43 (which is the system I use), you can start with the following system packages as a
+> reference:
+>
+> ```bash
+> sudo dnf install -y \
+>   gcc gcc-c++ make cmake pkgconf-pkg-config swig \
+>   SDL2-devel SDL2_image-devel SDL2_mixer-devel SDL2_ttf-devel \
+>   portmidi-devel mesa-libGL-devel
+> ```
+>
+> Recommended workflow: run `uv sync` (or `uv pip install ...`) first, then
+> install only the missing build tools/libraries reported in the error logs.
 
 ## 🎮 Projects
 
@@ -56,8 +89,6 @@ uv run python -c "import neat; p = neat.Checkpointer.restore_checkpoint('checkpo
 ```
 
 ## 📦 Installation
-
-**Requirements:** Python 3.14+
 
 ```bash
 uv sync
