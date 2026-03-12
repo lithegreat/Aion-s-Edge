@@ -405,7 +405,6 @@ name = "neuroevolution-games"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "gymnasium", extra = ["box2d"] },
     { name = "matplotlib" },
     { name = "neat-python" },
     { name = "numpy" },
@@ -415,9 +414,14 @@ dependencies = [
     { name = "streamlit" },
 ]
 
+[package.optional-dependencies]
+lunar = [
+    { name = "gymnasium", extra = ["box2d"] },
+]
+
 [package.metadata]
 requires-dist = [
-    { name = "gymnasium", extras = ["box2d"], specifier = ">=1.2.2" },
+    { name = "gymnasium", extras = ["box2d"], marker = "extra == 'lunar'", specifier = ">=1.2.2" },
     { name = "matplotlib", specifier = ">=3.10.0" },
     { name = "neat-python", specifier = ">=1.1.0" },
     { name = "numpy", specifier = ">=2.3.5" },
@@ -426,6 +430,7 @@ requires-dist = [
     { name = "scipy", specifier = ">=1.15.0" },
     { name = "streamlit", specifier = ">=1.42.0" },
 ]
+provides-extras = ["lunar"]
 
 [[package]]
 name = "numpy"
