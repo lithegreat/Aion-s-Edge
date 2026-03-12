@@ -18,6 +18,15 @@ make pdf
 
 The generated PDF is written to `build/main.pdf`.
 
+## GitHub Actions
+
+The repository includes a GitHub Actions workflow at
+`.github/workflows/report.yml`.
+
+- Any change to the report sources triggers an automatic PDF build.
+- On pushes to the `main` branch, the workflow also creates a GitHub
+	Release and uploads the generated report PDF.
+
 ## Clean
 
 ```bash

@@ -1,5 +1,10 @@
 # Aion's Edge
 
+[![Report Build](https://github.com/lithegreat/Aion-s-Edge/actions/workflows/report.yml/badge.svg)](https://github.com/lithegreat/Aion-s-Edge/actions/workflows/report.yml)
+[![Latest Release](https://img.shields.io/github/v/release/lithegreat/Aion-s-Edge?label=latest%20release)](https://github.com/lithegreat/Aion-s-Edge/releases/latest)
+
+[Download Latest Report PDF](https://github.com/lithegreat/Aion-s-Edge/releases/latest/download/aions-edge-report.pdf)
+
 Hands-on projects for the course "Multi-Criteria Optimization and
 Decision Analysis." The main experience is Aion's Edge (a Streamlit
 strategy game), plus two classic neuroevolution demos.

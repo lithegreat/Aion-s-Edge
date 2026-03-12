@@ -1,13 +1,221 @@
-\section{Methods}
+\section{Game Design, Models, and Development Process}
 
-This section can document the modeling choices, algorithms, and
-experimental setup used in the repository.
+\subsection{Overall design logic}
 
-Possible topics include:
+The design goal of Aion's Edge was not to simulate a realistic colony in
+full detail. Instead, the goal was to build a small but readable system
+in which each gameplay stage corresponds to a different class of
+decision problem from the course. This led to three design principles.
 
-\begin{itemize}
-  \item Linear programming constraints and objective functions.
-  \item Pareto-front generation and trade-off analysis.
-  \item Voting rules used for group decisions.
-  \item Genetic algorithms and NEAT-based training pipelines.
-\end{itemize}
+First, every level must expose a decision with visible constraints or
+conflicts. Second, the consequence of a decision must carry into later
+stages, so that optimisation is treated as a dynamic process rather than
+as a one-shot calculation. Third, the interface must make the underlying
+mathematical structure legible enough that a player can connect actions
+to concepts such as feasibility, non-dominance, and social choice.
+
+The resulting game loop is a four-phase turn structure: production,
+policy, council, and resolution. The production stage generates
+resources, the policy stage chooses a medium-term allocation, the council
+stage decides which development plan is politically accepted, and the
+resolution stage applies persistent changes to colony state variables
+such as economy, environment, morale, oxygen reserve, and food reserve.
+This persistence is important because it turns each local optimisation
+problem into part of a longer decision process.
+
+\subsection{Level 1: Linear programming as survival planning}
+
+Level 1 frames the player as the colony AI responsible for producing
+oxygen $x_1$ and food $x_2$ while respecting energy and labour limits.
+The game presents the optimisation problem as
+
+\[
+\max Z = c_1 x_1 + c_2 x_2
+\]
+
+subject to
+
+\[
+2x_1 + x_2 \leq b_1, \qquad x_1 + 2x_2 \leq b_2, \qquad x_1, x_2 \geq 0.
+\]
+
+This is a deliberately small model, but it captures the main idea of
+linear programming: a linear objective is optimised over a feasible
+region defined by linear constraints. In the
+implementation, the solver uses \texttt{scipy.optimize.linprog} with
+the HiGHS backend. The player sees the feasible polygon, the chosen
+point, and the optimal point, so the geometry of the model remains
+visible during play.
+
+To avoid making the level feel like a static worksheet, I added random
+events that modify the right-hand side vector or objective coefficients.
+For example, a dust storm reduces available energy, a flu outbreak
+reduces labour, and a technology breakthrough increases the production
+value coefficients. These events show that the same model structure can
+lead to different feasible regions and different optima when parameters
+change.
+
+The scoring logic also follows the model. A feasible plan yields output
+and improves longer-term colony variables in proportion to efficiency
+relative to the LP optimum. An infeasible plan causes reserve losses and
+morale damage. This means the level rewards both feasibility and quality
+of allocation.
+
+\subsection{Level 2: Multi-objective optimisation as policy design}
+
+Level 2 shifts from a single-objective optimisation problem to a
+multi-objective design problem. The player allocates a fixed budget
+among industry, ecology, and welfare, and each allocation is mapped to
+two main objectives: pollution and economic output. A third indicator,
+morale lift, influences the persistent game state. The player proposal
+is then compared against AI-generated alternatives sampled from a
+Dirichlet distribution.
+
+This level operationalises a central course idea: in multi-objective
+optimisation there is usually no single best solution. Instead, we look
+for the set of non-dominated solutions known as the Pareto front
+In the implementation, pollution is a
+minimisation objective and output is a maximisation objective, so the
+solver normalises directions before checking dominance. The player can
+therefore see whether a chosen policy is Pareto-optimal or dominated.
+If it is dominated, the interface points to an AI policy that dominates
+it. This makes the definition of dominance easy to understand in
+practice.
+
+The level also computes the Nadir point of the Pareto front. This gives
+a worst-case reference among efficient policies and supports discussion
+of ideal and anti-ideal thinking in multi-criteria analysis. The main
+message of the level is simple: a good policy is not one perfect point,
+but a trade-off on a frontier.
+
+Another design choice is that Pareto-optimal policies reward the player
+with an influence token used in the later voting stage. This links
+mathematical efficiency to political leverage. Efficient policy design
+helps in the next stage, but it does not guarantee final adoption.
+
+\subsection{Level 3: Voting theory and MCDA in the council}
+
+Level 3 turns the policy problem into a collective choice problem. Three
+factions with different priorities must rank three development plans,
+and the final winner depends on the voting rule. The game implements
+plurality, Borda Count, and Condorcet comparison, which are standard
+examples for discussing preference aggregation. The weights of the
+factions are endogenous: they depend on the current colony state. This
+means earlier optimisation decisions influence not only resources but
+also the political structure of the next stage.
+
+This level reflects two lessons from the course. First, aggregation
+rules matter: the same profile of preferences can generate different
+winners under different rules. Second, collective rationality is not
+guaranteed: Condorcet cycles can emerge, illustrating the instability
+of majority-based comparison. The
+project includes both a live council mode and paradox-oriented
+scenarios. In the live mode, the player may spend influence tokens to
+lobby a faction and alter its top-ranked plan.
+
+From an MCDA perspective, this stage shows the gap between objective
+evaluation and institutional choice. A plan that looks attractive in
+objective terms may still lose once preferences are aggregated.
+
+\subsection{How the project was refined step by step}
+
+The project did not begin as a fully integrated educational game. It
+started with two neuroevolution exercises, Flappy Bird and Lunar
+Lander. These earlier experiments established a practical workflow for
+experimentation and improvement and helped shape the broader idea that
+optimisation should be visible through interaction rather than hidden in
+tables of results.
+
+The next major step was the introduction of Aion's Edge as a three-level
+Streamlit game. At that point, the project already contained the main
+ideas of the course, but the implementation was concentrated in a very
+large entry point and one monolithic optimisation engine. This was a
+useful prototype because it made the game playable early, but it also
+made the structure difficult to maintain and explain.
+
+The next problem, therefore, was not whether the game worked, but how to
+make its logic clearer. I addressed this in stages. First, the
+application was split into campaign and level modules so that global
+state and level-specific behaviour were no longer mixed together.
+Second, the turn flow was reorganised into production, policy, council,
+and resolution, which made the player experience easier to follow and
+aligned the gameplay more closely with the conceptual sequence of the
+course. Third, campaign state, level logic, and view code were separated
+into packages. Finally, the former monolithic optimisation engine was
+replaced with dedicated modules for linear programming,
+multi-objective optimisation, and voting. At that point, the software
+structure matched the conceptual structure much more closely.
+
+This progression reflects two kinds of learning. The first is modelling
+learning: the course ideas become more explicit in the design. The
+second is software engineering learning: a working prototype is
+gradually turned into a more modular and readable codebase. The report
+module is part of that same progression because it turns the repository
+into a documented course submission rather than a code-only artefact.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+	event/.style={
+		draw,
+		rounded corners,
+		fill=gray!10,
+		align=left,
+		text width=10.4cm,
+		inner sep=6pt
+	},
+	dot/.style={circle, fill=black, minimum size=4pt, inner sep=0pt},
+	arrow/.style={-{Latex[length=3mm]}, thick}
+]
+\draw[arrow] (0,0) -- (0,-8.6);
+
+\node[dot] at (0,-0.4) {};
+\node[event, anchor=west] at (0.5,-0.4) {
+	\textbf{Neuroevolution prototypes}\\
+	Flappy Bird and Lunar Lander establish the first optimisation-driven
+	experiments in the repository.
+};
+
+\node[dot] at (0,-2.3) {};
+\node[event, anchor=west] at (0.5,-2.3) {
+	\textbf{2026-02-11: Aion's Edge introduced}\\
+	First integrated Streamlit game with three optimisation levels.
+};
+
+\node[dot] at (0,-4.2) {};
+\node[event, anchor=west] at (0.5,-4.2) {
+	\textbf{Report and modular split}\\
+	The repository gains a LaTeX report module and the game is split into
+	campaign and level modules.
+};
+
+\node[dot] at (0,-6.1) {};
+\node[event, anchor=west] at (0.5,-6.1) {
+	\textbf{Staged turn flow}\\
+	The turn structure becomes production, policy, council, and
+	resolution, which better matches the course logic.
+};
+
+\node[dot] at (0,-8.0) {};
+\node[event, anchor=west] at (0.5,-8.0) {
+	\textbf{Dedicated optimisation package}\\
+	LP, MOO, and voting logic are separated into their own modules,
+	making the architecture clearer and easier to explain.
+};
+\end{tikzpicture}
+\caption{Project timeline showing how the repository moved from
+prototypes to a clearer course-oriented game and report.}
+\label{fig:git-timeline}
+\end{figure}
+
+\subsection{Why this project reflects course knowledge}
+
+As a course assignment, the value of the project lies in the way it
+combines theoretical concepts with design decisions. Linear programming
+is not included as a decorative formula; it determines how the first
+level is played. Pareto analysis is not reduced to a chart; it decides
+whether a policy is efficient or dominated. Voting theory is not treated
+as background reading; it governs whether an efficient plan can survive
+collective choice. The course content therefore appears at three levels
+simultaneously: in the mathematical models, in the user-facing gameplay,
+and in the iterative improvement of the software structure.
