@@ -10,7 +10,11 @@ try:
     import neat
     import numpy as np
 except ImportError as e:
-    print(f"Missing dependency: {e}. Install with: pip install gymnasium neat-python numpy pyyaml")
+    print(
+        "Missing dependency: "
+        f"{e}. Install with: pip install 'gymnasium[box2d]' "
+        "neat-python numpy pyyaml"
+    )
     sys.exit(1)
 
 # ==========================================

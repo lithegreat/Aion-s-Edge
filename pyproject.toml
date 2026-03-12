@@ -5,7 +5,6 @@ description = "Neuroevolution experiments with games: Flappy Bird and LunarLande
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-    "gymnasium[box2d]>=1.2.2",
     "matplotlib>=3.10.0",
     "neat-python>=1.1.0",
     "numpy>=2.3.5",
@@ -13,4 +12,9 @@ dependencies = [
     "pyyaml>=6.0",
     "scipy>=1.15.0",
     "streamlit>=1.42.0",
+]
+
+[project.optional-dependencies]
+lunar = [
+    "gymnasium[box2d]>=1.2.2",
 ]
