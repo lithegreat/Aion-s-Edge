@@ -7,13 +7,13 @@ import streamlit as st
 
 from src.OptimizationEngine import MOOSolver
 from src.campaign import set_phase
-from src.level2_core import (
+from .core import (
     apply_policy_choice,
     find_dominator,
     generate_policy_allocations,
     policy_to_objectives,
 )
-from src.level2_views import draw_pareto_plot
+from .views import draw_pareto_plot
 
 
 def render_level2() -> None:

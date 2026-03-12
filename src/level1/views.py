@@ -18,7 +18,7 @@ from src.campaign import (
     get_b_ub,
     get_objective,
 )
-from src.level1_core import compute_feasible_polygon, is_feasible
+from .core import compute_feasible_polygon, is_feasible
 
 
 def draw_lp_plot(

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from src.campaign_core import (
+from .core import (
     PHASE_LABELS,
     TOTAL_TURNS,
     TURN_PHASES,

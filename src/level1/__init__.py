@@ -11,12 +11,12 @@ from src.campaign import (
     reset_session_state,
     set_phase,
 )
-from src.level1_core import (
+from .core import (
     compute_optimal_solution,
     is_feasible,
     resolve_level1_turn,
 )
-from src.level1_views import draw_lp_plot, render_event_banner
+from .views import draw_lp_plot, render_event_banner
 
 
 def render_level1() -> None:

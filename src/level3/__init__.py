@@ -12,14 +12,14 @@ from src.campaign import (
     record_turn_report,
     set_phase,
 )
-from src.level3_core import (
+from .core import (
     FACTIONS,
     PLANS,
     enact_council_plan,
     generate_live_ballots,
     resolve_voting_rule,
 )
-from src.level3_views import (
+from .views import (
     detect_paradox,
     render_plan_catalog,
     render_preferences_table,
