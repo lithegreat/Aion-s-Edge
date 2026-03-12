@@ -3,7 +3,11 @@ name = "neuroevolution-games"
 version = "0.1.0"
 description = "Neuroevolution experiments with games: Flappy Bird and LunarLander"
 readme = "README.md"
+license = { file = "LICENSE" }
 requires-python = ">=3.14"
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+]
 dependencies = [
     "matplotlib>=3.10.0",
     "neat-python>=1.1.0",
