@@ -408,13 +408,15 @@ dependencies = [
     { name = "matplotlib" },
     { name = "neat-python" },
     { name = "numpy" },
-    { name = "pygame" },
     { name = "pyyaml" },
     { name = "scipy" },
     { name = "streamlit" },
 ]
 
 [package.optional-dependencies]
+flappy = [
+    { name = "pygame" },
+]
 lunar = [
     { name = "gymnasium", extra = ["box2d"] },
 ]
@@ -425,12 +427,12 @@ requires-dist = [
     { name = "matplotlib", specifier = ">=3.10.0" },
     { name = "neat-python", specifier = ">=1.1.0" },
     { name = "numpy", specifier = ">=2.3.5" },
-    { name = "pygame", specifier = ">=2.6.1" },
+    { name = "pygame", marker = "extra == 'flappy'", specifier = ">=2.6.1" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "scipy", specifier = ">=1.15.0" },
     { name = "streamlit", specifier = ">=1.42.0" },
 ]
-provides-extras = ["lunar"]
+provides-extras = ["flappy", "lunar"]
 
 [[package]]
 name = "numpy"
