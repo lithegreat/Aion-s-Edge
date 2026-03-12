@@ -4,6 +4,7 @@
 [![Latest Release](https://img.shields.io/github/v/release/lithegreat/Aion-s-Edge?label=latest%20release)](https://github.com/lithegreat/Aion-s-Edge/releases/latest)
 
 [Download Latest Report PDF](https://github.com/lithegreat/Aion-s-Edge/releases/latest/download/aions-edge-report.pdf)
+[Live Streamlit Demo](https://aion-s-edge.streamlit.app/)
 
 Hands-on projects for the course "Multi-Criteria Optimization and
 Decision Analysis." The main experience is Aion's Edge (a Streamlit
@@ -49,6 +50,9 @@ A Streamlit colony-strategy game that teaches Linear Programming,
 Multi-Objective Optimization, and Voting Theory/MCDA through three
 playable levels.
 
+**Play online:**
+- https://aion-s-edge.streamlit.app/
+
 **Features:**
 - Level 1: LP survival planning with random events
 - Level 2: Pareto-front exploration and Nadir analysis
@@ -58,6 +62,9 @@ playable levels.
 ```bash
 uv run streamlit run src/app.py
 ```
+
+The public deployment is hosted on Streamlit Community Cloud and tracks
+the `main` branch.
 
 ### 2. Flappy Bird Evolution
 A pure NumPy neural network learns to play Flappy Bird through a
@@ -192,6 +199,9 @@ neuroevolution_games/
 This repository now includes a dedicated LaTeX report module in
 `report/` for writing course notes, experiment summaries, and project
 reports.
+
+The report describes the same public build that is available at:
+- https://aion-s-edge.streamlit.app/
 
 **Build prerequisites:**
 - A LaTeX distribution such as TeX Live
