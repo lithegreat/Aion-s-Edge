@@ -15,8 +15,7 @@ Before installation, make sure you have:
 
 - Python 3.14+
 - `uv` package manager installed
-- (Linux) Development libraries for graphics/physics packages used by
-	`pygame` and `gymnasium[box2d]`
+- Optional for demos: native build tools for `pygame`/`gymnasium[box2d]`
 
 If `uv` is not installed:
 
@@ -26,8 +25,9 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 > [!WARNING]
 > This project uses Python 3.14 (very new), so some dependencies may not
-> have prebuilt wheels yet. `pygame` and `gymnasium[box2d]` may need local
-> compilation during install.
+> have prebuilt wheels yet. The Streamlit game runs with the base
+> dependencies, but optional demos may require local compilation:
+> `pygame` (Flappy Bird) and `gymnasium[box2d]` (Lunar Lander).
 >
 > On Fedora 43 (which is the system I use), you can start with the following system packages as a
 > reference:
@@ -101,7 +101,22 @@ uv sync
 
 Or manually install dependencies:
 ```bash
-uv pip install gymnasium[box2d] neat-python numpy pygame pyyaml scipy streamlit
+uv pip install neat-python numpy pyyaml scipy streamlit matplotlib
+```
+
+Optional (Flappy Bird only):
+```bash
+uv pip install pygame
+```
+
+Optional (Lunar Lander only):
+```bash
+uv pip install "gymnasium[box2d]"
+```
+
+Install optional extras through project metadata:
+```bash
+uv sync --extra flappy --extra lunar
 ```
 
 ## 🧬 How It Works

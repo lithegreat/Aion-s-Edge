@@ -1,8 +1,16 @@
-import pygame
 import numpy as np
 import random
 import sys
 import copy
+
+try:
+    import pygame
+except ImportError as e:
+    print(
+        "Missing dependency: "
+        f"{e}. Install with: pip install pygame"
+    )
+    sys.exit(1)
 
 # ==========================================
 # 1. 配置参数
