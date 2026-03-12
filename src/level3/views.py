@@ -7,7 +7,7 @@ from typing import Dict, List, Tuple
 import matplotlib.pyplot as plt
 import streamlit as st
 
-from src.OptimizationEngine import VotingSystem
+from src.optimization import VotingSystem
 from src.campaign import DEVELOPMENT_PLANS
 
 

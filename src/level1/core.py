@@ -8,7 +8,7 @@ import numpy as np
 import streamlit as st
 from numpy.typing import NDArray
 
-from src.OptimizationEngine import LPSolver
+from src.optimization import LPSolver
 from src.campaign import (
     A_UB,
     BOUNDS,

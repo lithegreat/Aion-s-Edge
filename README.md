@@ -102,10 +102,10 @@ uv pip install gymnasium[box2d] neat-python numpy pygame pyyaml scipy streamlit
 ## 🧬 How It Works
 
 ### Aion's Edge Math Engine
-The numerical solvers live in `src/OptimizationEngine.py`:
-- `LPSolver`: linear programming for survival planning
-- `MOOSolver`: Pareto-front detection and Nadir analysis
-- `VotingSystem`: voting rules for MCDA decisions
+The numerical solvers now live in `src/optimization/`:
+- `lp.py`: linear programming for survival planning
+- `moo.py`: Pareto-front detection and Nadir analysis
+- `voting.py`: voting rules for MCDA decisions
 
 The game flow now uses package-based modules under `src/`:
 - `src/campaign/`: shared campaign state, events, and turn resolution
@@ -137,7 +137,11 @@ neuroevolution_games/
 │   └── sections/             # Report chapters/sections
 ├── src/
 │   ├── app.py                 # Aion's Edge Streamlit entry point
-│   ├── OptimizationEngine.py  # LP, MOO, and voting solvers
+│   ├── optimization/
+│   │   ├── __init__.py        # Shared optimization package exports
+│   │   ├── lp.py              # Linear-programming solver
+│   │   ├── moo.py             # Pareto and Nadir analysis
+│   │   └── voting.py          # Voting-rule evaluation
 │   ├── campaign/
 │   │   ├── __init__.py        # Campaign package exports
 │   │   ├── core.py            # Shared state, events, and turn flow

@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import streamlit as st
 
-from src.OptimizationEngine import MOOSolver
+from src.optimization import MOOSolver
 from src.campaign import set_phase
 from .core import (
     apply_policy_choice,
