@@ -1,7 +1,111 @@
 \section{Introduction}
 
-This section can describe the project context, course objectives, and
-the role of optimization within the implemented games.
+This project was developed for the course ``Multi-Criteria Optimization
+and Decision Analysis'' with the goal of showing that operations
+research can be communicated through an interactive system rather than
+only through static exercises. Instead of presenting linear programming,
+multi-objective optimisation, and voting theory as separate textbook
+topics, I designed a small strategy game in which each turn asks the
+player to solve one decision problem from the course.
 
-You can also explain how the repository combines linear programming,
-multi-objective optimization, voting theory, and neuroevolution.
+The main artefact is \emph{Aion's Edge}, a Streamlit-based colony
+management game. The player acts as the governing AI of a fragile
+settlement and must survive a sequence of turns. Each turn is divided
+into three decision stages. In Level 1, the player chooses production of
+oxygen and food under energy and labour constraints, which creates a
+classical linear-programming problem. In Level 2, the player allocates a
+policy budget among industry, ecology, and welfare, and the resulting
+proposal is evaluated against AI-generated alternatives through Pareto
+dominance and Nadir analysis. In Level 3, the policy direction must be
+converted into law by a council of factions whose preferences are
+aggregated by plurality, Borda Count, or Condorcet comparison. The game
+therefore links optimisation, trade-offs, and political feasibility in a
+single loop. The current playable deployment is available at
+\url{https://aion-s-edge.streamlit.app/}, which makes the project
+accessible without requiring a local Python setup.
+
+This design reflects a core lesson from the course: real decisions are
+rarely single-objective. A mathematically good action can still be
+socially blocked, and a politically acceptable action can still be
+dominated in objective space. By placing these tensions into a playable
+sequence, the project makes explicit why decision analysis is broader
+than pure optimisation. Linear programming is used to find efficient
+allocations; multi-objective optimisation is used to
+reason about non-dominated trade-offs; and voting
+theory is used to reveal how collective choice can change when the
+aggregation rule changes. The game is therefore not
+just inspired by the course content; it is structured by it.
+
+The repository also contains two earlier neuroevolution exercises,
+Flappy Bird with a custom genetic algorithm and Lunar Lander with NEAT.
+Those experiments are relevant because they shaped the way I approached
+search and improvement in the main game. They were my first attempts to
+make optimisation visible through behaviour rather than through numeric
+tables alone. However, the centre of this report is Aion's Edge because
+it is the part that most directly integrates the course topics into one
+design.
+
+The remainder of the report has two purposes. First, it explains the
+game design and the operations research concepts behind each stage.
+Second, it explains how the project gradually evolved from early
+experiments into a clearer and more coherent course project. Since this
+is a course assignment, that second part is important: I want to show
+not only what the final result is, but also how course knowledge guided
+the modelling and software-design choices that produced it. The project
+repository is available at
+\url{https://github.com/lithegreat/Aion-s-Edge}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+	box/.style={
+		draw,
+		rounded corners,
+		align=center,
+		minimum width=3.4cm,
+		minimum height=1.8cm,
+		fill=gray!10
+	},
+	arrow/.style={-{Latex[length=3mm]}, thick}
+]
+\node[box] (l1) {
+	\textbf{Level 1}\\
+	Production planning\\
+	oxygen and food
+};
+\node[box, right=1.3cm of l1] (l2) {
+	\textbf{Level 2}\\
+	Policy design\\
+	industry, ecology, welfare
+};
+\node[box, right=1.3cm of l2] (l3) {
+	\textbf{Level 3}\\
+	Council decision\\
+	factions choose a plan
+};
+
+\node[box, below=1.4cm of l1] (m1) {
+	\textbf{OR concept}\\
+	Linear programming\\
+	feasibility and optimum
+};
+\node[box, below=1.4cm of l2] (m2) {
+	\textbf{OR concept}\\
+	Pareto front\\
+	trade-off analysis
+};
+\node[box, below=1.4cm of l3] (m3) {
+	\textbf{OR concept}\\
+	Voting theory / MCDA\\
+	aggregation rules
+};
+
+\draw[arrow] (l1) -- (l2);
+\draw[arrow] (l2) -- (l3);
+\draw[arrow] (l1) -- (m1);
+\draw[arrow] (l2) -- (m2);
+\draw[arrow] (l3) -- (m3);
+\end{tikzpicture}
+\caption{Mapping between gameplay stages and course concepts.}
+\label{fig:course-mapping}
+\end{figure}
