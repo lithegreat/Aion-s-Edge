@@ -102,10 +102,16 @@ uv pip install gymnasium[box2d] neat-python numpy pygame pyyaml scipy streamlit
 ## 🧬 How It Works
 
 ### Aion's Edge Math Engine
-The core logic lives in `src/OptimizationEngine.py`:
+The numerical solvers live in `src/OptimizationEngine.py`:
 - `LPSolver`: linear programming for survival planning
 - `MOOSolver`: Pareto-front detection and Nadir analysis
 - `VotingSystem`: voting rules for MCDA decisions
+
+The game flow now uses package-based modules under `src/`:
+- `src/campaign/`: shared campaign state, events, and turn resolution
+- `src/level1/`: Level 1 orchestration, LP logic, and plotting
+- `src/level2/`: Level 2 orchestration, policy scoring, and Pareto views
+- `src/level3/`: Level 3 orchestration, voting logic, and council views
 
 ### Genetic Algorithm (Flappy Bird)
 1. **Initialize** population with random neural networks
@@ -130,8 +136,24 @@ neuroevolution_games/
 │   ├── Makefile              # Report build commands
 │   └── sections/             # Report chapters/sections
 ├── src/
-│   ├── app.py                 # Aion's Edge (Streamlit app)
-│   └── OptimizationEngine.py  # LP, MOO, and voting solvers
+│   ├── app.py                 # Aion's Edge Streamlit entry point
+│   ├── OptimizationEngine.py  # LP, MOO, and voting solvers
+│   ├── campaign/
+│   │   ├── __init__.py        # Campaign package exports
+│   │   ├── core.py            # Shared state, events, and turn flow
+│   │   └── views.py           # Campaign status and resolution UI
+│   ├── level1/
+│   │   ├── __init__.py        # Level 1 page orchestration
+│   │   ├── core.py            # LP gameplay logic
+│   │   └── views.py           # Level 1 charts and event UI
+│   ├── level2/
+│   │   ├── __init__.py        # Level 2 page orchestration
+│   │   ├── core.py            # Policy and Pareto logic
+│   │   └── views.py           # Level 2 plots and UI helpers
+│   └── level3/
+│       ├── __init__.py        # Level 3 page orchestration
+│       ├── core.py            # Voting and council resolution logic
+│       └── views.py           # Voting visualizations and summaries
 ├── other_games/
 │   ├── flappy_evolution.py    # Flappy Bird with custom GA
 │   └── lunar_neat.py          # Lunar Lander with NEAT
