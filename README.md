@@ -220,11 +220,6 @@ cd report
 make clean
 ```
 
-## License
-
-This project is licensed under the GNU General Public License v3.0.
-See the LICENSE file for the full text.
-
 ## 🎯 Training Tips
 
 **Flappy Bird:**
@@ -247,8 +242,5 @@ Edit [config/config-feedforward.yaml](config/config-feedforward.yaml) to tune NE
 
 ## 📝 License
 
-MIT
-
-## 🤝 Contributing
-
-Feel free to open issues or PRs for improvements!
+This project is licensed under the GNU General Public License v3.0.
+See the LICENSE file for the full text.
