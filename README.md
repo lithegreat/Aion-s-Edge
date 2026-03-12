@@ -4,6 +4,7 @@
 [![Latest Release](https://img.shields.io/github/v/release/lithegreat/Aion-s-Edge?label=latest%20release)](https://github.com/lithegreat/Aion-s-Edge/releases/latest)
 
 [Download Latest Report PDF](https://github.com/lithegreat/Aion-s-Edge/releases/latest/download/aions-edge-report.pdf)
+
 [Live Streamlit Demo](https://aion-s-edge.streamlit.app/)
 
 Hands-on projects for the course "Multi-Criteria Optimization and
