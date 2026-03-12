@@ -153,26 +153,6 @@ gradually turned into a more modular and readable codebase. The report
 module is part of that same progression because it turns the repository
 into a documented course submission rather than a code-only artefact.
 
-\subsection{Deployment and accessibility}
-
-An important final step was deployment. The game is now hosted on
-Streamlit Community Cloud at \url{https://aion-s-edge.streamlit.app/},
-which changes the project from a local prototype into a publicly
-accessible course artefact. This matters for two reasons. First, it
-reduces the setup burden for evaluators, since they can inspect the game
-directly in a browser. Second, it forces the software to satisfy a more
-realistic packaging constraint: the default dependency set must support
-cloud installation without relying on local system libraries.
-
-That deployment work led to a useful engineering refinement. Optional
-demo dependencies such as \texttt{pygame} and
-\texttt{gymnasium[box2d]} were moved out of the base dependency set and
-into optional extras. This keeps the public Aion's Edge build focused on
-the Streamlit game itself while preserving the Flappy Bird and Lunar
-Lander experiments for local use. In other words, deployment was not an
-afterthought; it directly improved the clarity of the repository's
-dependency structure.
-
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[
@@ -198,7 +178,7 @@ dependency structure.
 
 \node[dot] at (0,-2.3) {};
 \node[event, anchor=west] at (0.5,-2.3) {
-	\textbf{2026-02-11: Aion's Edge introduced}\\
+	\textbf{Aion's Edge introduced}\\
 	First integrated Streamlit game with three optimisation levels.
 };
 
@@ -227,15 +207,3 @@ dependency structure.
 prototypes to a clearer course-oriented game and report.}
 \label{fig:git-timeline}
 \end{figure}
-
-\subsection{Why this project reflects course knowledge}
-
-As a course assignment, the value of the project lies in the way it
-combines theoretical concepts with design decisions. Linear programming
-is not included as a decorative formula; it determines how the first
-level is played. Pareto analysis is not reduced to a chart; it decides
-whether a policy is efficient or dominated. Voting theory is not treated
-as background reading; it governs whether an efficient plan can survive
-collective choice. The course content therefore appears at three levels
-simultaneously: in the mathematical models, in the user-facing gameplay,
-and in the iterative improvement of the software structure.
